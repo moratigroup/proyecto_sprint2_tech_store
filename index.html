@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Tu Tienda de Tecnología</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="app.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .carousel-slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .carousel-slide.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background-color: #10b981;
+        }
+        
+        .notification.error {
+            background-color: #ef4444;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1.5rem;
+            width: 2px;
+            height: calc(100% - 1rem);
+            background-color: #e5e7eb;
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold">🛒 TechStore</h1>
+                </div>
+                
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" onclick="showSection('home')" class="hover:text-blue-300 transition">Inicio</a>
+                    <a href="#" onclick="showSection('about')" class="hover:text-blue-300 transition">Nosotros</a>
+                    <a href="#" onclick="showSection('products')" class="hover:text-blue-300 transition">Productos</a>
+                    <a href="#" onclick="showSection('categories')" class="hover:text-blue-300 transition">Categorías</a>
+                </nav>
+
+                <!-- Mobile menu button (visible on small screens) -->
+                <button id="mobile-menu-button" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300" aria-controls="mobile-nav" aria-expanded="false" aria-label="Abrir menú">
+                    <!-- hamburger icon -->
+                    <svg id="mobile-menu-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <!-- close icon (hidden by default) -->
+                    <svg id="mobile-menu-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="showSection('cart')" class="relative hover:text-blue-300 transition">
+                        🛒 Carrito
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
+                    </button>
+                    
+                    <div id="user-menu" class="hidden">
+                        <span id="user-name" class="mr-2"></span>
+                        <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm transition">Salir</button>
+                    </div>
+                    
+                    <div id="auth-buttons">
+                        <button onclick="showSection('login')" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition">Iniciar Sesión</button>
+                        <button onclick="showSection('register')" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded ml-2 transition">Registrarse</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Mobile navigation (hidden by default) -->
+    <nav id="mobile-nav" class="md:hidden hidden bg-blue-900 text-white">
+        <div class="container mx-auto px-4 py-4">
+            <ul class="space-y-3">
+                <li><a href="#" onclick="showSection('home'); closeMobileMenu();" class="block hover:text-blue-300">Inicio</a></li>
+                <li><a href="#" onclick="showSection('about'); closeMobileMenu();" class="block hover:text-blue-300">Nosotros</a></li>
+                <li><a href="#" onclick="showSection('products'); closeMobileMenu();" class="block hover:text-blue-300">Productos</a></li>
+                <li><a href="#" onclick="showSection('categories'); closeMobileMenu();" class="block hover:text-blue-300">Categorías</a></li>
+                <li><a href="#" onclick="showSection('cart'); closeMobileMenu();" class="block hover:text-blue-300">Carrito</a></li>
+                <li><a href="#" onclick="showSection('login'); closeMobileMenu();" class="block hover:text-blue-300">Iniciar Sesión</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Home Section -->
+        <section id="home-section" class="section">
+            <!-- Banner Carousel -->
+            <div class="carousel-container bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg mb-8 h-64">
+                <div class="carousel-slide active flex items-center justify-center text-white text-center p-8">
+                    <div>
+                        <h2 class="text-4xl font-bold mb-4">¡Bienvenido a TechStore!</h2>
+                        <p class="text-xl">Los mejores productos tecnológicos al mejor precio</p>
+                        <p class="text-sm mt-2 opacity-90">Más de 13 años conectando el futuro contigo</p>
+                    </div>
+                </div>
+                <div class="carousel-slide flex items-center justify-center text-white text-center p-8">
+                    <div>
+                        <h2 class="text-4xl font-bold mb-4">Ofertas Especiales</h2>
+                        <p class="text-xl">Hasta 50% de descuento en productos seleccionados</p>
+                        <p class="text-sm mt-2 opacity-90">Calidad garantizada desde 2010</p>
+                    </div>
+                </div>
+                <div class="carousel-slide flex items-center justify-center text-white text-center p-8">
+                    <div>
+                        <h2 class="text-4xl font-bold mb-4">Envío Gratis</h2>
+                        <p class="text-xl">En compras superiores a $200.000</p>
+                        <p class="text-sm mt-2 opacity-90">Compromiso con la excelencia</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Company Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-3xl font-bold text-blue-600 mb-2">13+</div>
+                    <div class="text-gray-600">Años de experiencia</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-3xl font-bold text-green-600 mb-2">50K+</div>
+                    <div class="text-gray-600">Clientes satisfechos</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-3xl font-bold text-purple-600 mb-2">1000+</div>
+                    <div class="text-gray-600">Productos disponibles</div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="text-3xl font-bold text-orange-600 mb-2">24/7</div>
+                    <div class="text-gray-600">Soporte técnico</div>
+                </div>
+            </div>
+
+            <!-- Featured Products -->
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Productos Destacados</h2>
+                <div id="featured-products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Categories Preview -->
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Nuestras Categorías</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('smartphones')">
+                        <div class="text-4xl mb-2">📱</div>
+                        <h3 class="font-semibold">Smartphones</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('laptops')">
+                        <div class="text-4xl mb-2">💻</div>
+                        <h3 class="font-semibold">Laptops</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('tablets')">
+                        <div class="text-4xl mb-2">📱</div>
+                        <h3 class="font-semibold">Tablets</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('accesorios')">
+                        <div class="text-4xl mb-2">🎧</div>
+                        <h3 class="font-semibold">Accesorios</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about-section" class="section hidden">
+            <!-- Hero Section -->
+            <div class="bg-gradient-to-r from-blue-900 to-purple-900 text-white rounded-lg p-12 mb-12 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">Sobre TechStore</h1>
+                <p class="text-xl opacity-90 max-w-3xl mx-auto">
+                    Más de una década conectando a las personas con la tecnología del futuro. 
+                    Somos pioneros en innovación y excelencia en el servicio al cliente.
+                </p>
+            </div>
+
+            <!-- Mission, Vision, Values -->
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-3xl">🎯</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Nuestra Misión</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Democratizar el acceso a la tecnología de vanguardia, ofreciendo productos 
+                        innovadores con el mejor servicio al cliente, contribuyendo al desarrollo 
+                        digital de nuestra sociedad y mejorando la calidad de vida de nuestros usuarios.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-3xl">🔮</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Nuestra Visión</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Ser la tienda de tecnología líder en América Latina para 2030, reconocida 
+                        por nuestra innovación, sostenibilidad y compromiso con la transformación 
+                        digital, siendo el puente entre las personas y el futuro tecnológico.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-3xl">💎</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Nuestros Valores</h3>
+                    <div class="text-gray-600 text-left">
+                        <div class="mb-2">• <strong>Innovación:</strong> Siempre a la vanguardia</div>
+                        <div class="mb-2">• <strong>Calidad:</strong> Productos certificados</div>
+                        <div class="mb-2">• <strong>Confianza:</strong> Transparencia total</div>
+                        <div class="mb-2">• <strong>Servicio:</strong> Atención excepcional</div>
+                        <div>• <strong>Sostenibilidad:</strong> Compromiso ambiental</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Company History -->
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Nuestra Historia</h2>
+                
+                <div class="max-w-4xl mx-auto">
+                    <div class="timeline-item mb-8">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h4 class="text-xl font-bold text-blue-800 mb-2">2010 - Los Inicios</h4>
+                            <p class="text-gray-700">
+                                TechStore nace como un pequeño local en el centro de la ciudad, fundado por 
+                                dos ingenieros apasionados por la tecnología. Comenzamos vendiendo computadoras 
+                                y accesorios básicos con el sueño de hacer la tecnología accesible para todos.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item mb-8">
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h4 class="text-xl font-bold text-green-800 mb-2">2013 - Expansión Digital</h4>
+                            <p class="text-gray-700">
+                                Lanzamos nuestra primera plataforma de comercio electrónico, revolucionando 
+                                la forma de comprar tecnología en línea. Incorporamos smartphones y tablets 
+                                a nuestro catálogo, alcanzando los 1,000 clientes registrados.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item mb-8">
+                        <div class="bg-purple-50 p-6 rounded-lg">
+                            <h4 class="text-xl font-bold text-purple-800 mb-2">2016 - Certificaciones</h4>
+                            <p class="text-gray-700">
+                                Obtenemos certificaciones internacionales de calidad ISO 9001 y nos convertimos 
+                                en distribuidores oficiales de las principales marcas tecnológicas. Abrimos 
+                                nuestro segundo local y lanzamos el programa de garantía extendida.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item mb-8">
+                        <div class="bg-orange-50 p-6 rounded-lg">
+                            <h4 class="text-xl font-bold text-orange-800 mb-2">2019 - Innovación y Servicio</h4>
+                            <p class="text-gray-700">
+                                Implementamos inteligencia artificial para personalizar la experiencia de compra 
+                                y lanzamos nuestro servicio técnico especializado 24/7. Alcanzamos los 25,000 
+                                clientes satisfechos y expandimos a 5 ciudades principales.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item mb-8">
+                        <div class="bg-red-50 p-6 rounded-lg">
+                            <h4 class="text-xl font-bold text-red-800 mb-2">2021 - Transformación Digital</h4>
+                            <p class="text-gray-700">
+                                Durante la pandemia, nos reinventamos completamente digitalizando todos nuestros 
+                                procesos. Lanzamos la app móvil, servicio de entrega en el mismo día y consultoría 
+                                tecnológica virtual, triplicando nuestras ventas en línea.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="bg-indigo-50 p-6 rounded-lg">
+                            <h4 class="text-xl font-bold text-indigo-800 mb-2">2023 - Presente</h4>
+                            <p class="text-gray-700">
+                                Hoy somos líderes en el mercado tecnológico con más de 50,000 clientes, 
+                                15 puntos de venta físicos y la plataforma de e-commerce más avanzada del sector. 
+                                Continuamos innovando con realidad aumentada, IA y sostenibilidad ambiental.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Section -->
+            <div class="bg-gray-100 rounded-lg p-8 mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Nuestro Equipo</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-3xl text-white">👨‍💼</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Carlos Rodríguez</h4>
+                        <p class="text-blue-600 font-semibold mb-2">CEO & Fundador</p>
+                        <p class="text-gray-600 text-sm">
+                            Ingeniero en Sistemas con 15 años de experiencia en tecnología. 
+                            Visionario y líder apasionado por la innovación.
+                        </p>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-3xl text-white">👩‍💼</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Ana María López</h4>
+                        <p class="text-green-600 font-semibold mb-2">CTO & Co-fundadora</p>
+                        <p class="text-gray-600 text-sm">
+                            Experta en desarrollo de software y arquitectura de sistemas. 
+                            Responsable de toda la infraestructura tecnológica.
+                        </p>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-3xl text-white">👨‍🔧</span>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">Miguel Torres</h4>
+                        <p class="text-purple-600 font-semibold mb-2">Director de Operaciones</p>
+                        <p class="text-gray-600 text-sm">
+                            Especialista en logística y cadena de suministro. 
+                            Garantiza la eficiencia en todos nuestros procesos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Nuestros Logros</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="text-center p-4 border-2 border-yellow-200 rounded-lg">
+                        <div class="text-4xl mb-2">🏆</div>
+                        <h4 class="font-bold text-yellow-600">Premio Excelencia</h4>
+                        <p class="text-sm text-gray-600">Mejor Tienda Tech 2022</p>
+                    </div>
+                    <div class="text-center p-4 border-2 border-green-200 rounded-lg">
+                        <div class="text-4xl mb-2">🌱</div>
+                        <h4 class="font-bold text-green-600">Certificación Verde</h4>
+                        <p class="text-sm text-gray-600">Empresa Sostenible 2023</p>
+                    </div>
+                    <div class="text-center p-4 border-2 border-blue-200 rounded-lg">
+                        <div class="text-4xl mb-2">⭐</div>
+                        <h4 class="font-bold text-blue-600">5 Estrellas</h4>
+                        <p class="text-sm text-gray-600">Satisfacción del Cliente</p>
+                    </div>
+                    <div class="text-center p-4 border-2 border-purple-200 rounded-lg">
+                        <div class="text-4xl mb-2">🚀</div>
+                        <h4 class="font-bold text-purple-600">Innovación</h4>
+                        <p class="text-sm text-gray-600">Startup del Año 2021</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products-section" class="section hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-800">Todos los Productos</h2>
+                <select id="category-filter" onchange="filterProducts()" class="px-4 py-2 border rounded-lg">
+                    <option value="">Todas las categorías</option>
+                    <option value="smartphones">Smartphones</option>
+                    <option value="laptops">Laptops</option>
+                    <option value="tablets">Tablets</option>
+                    <option value="accesorios">Accesorios</option>
+                </select>
+            </div>
+            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Products will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories-section" class="section hidden">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Categorías</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-8 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('smartphones')">
+                    <div class="text-6xl mb-4">📱</div>
+                    <h3 class="text-xl font-semibold mb-2">Smartphones</h3>
+                    <p class="text-gray-600">Los últimos modelos de smartphones</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('laptops')">
+                    <div class="text-6xl mb-4">💻</div>
+                    <h3 class="text-xl font-semibold mb-2">Laptops</h3>
+                    <p class="text-gray-600">Computadoras portátiles de alta gama</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('tablets')">
+                    <div class="text-6xl mb-4">📱</div>
+                    <h3 class="text-xl font-semibold mb-2">Tablets</h3>
+                    <p class="text-gray-600">Tablets para trabajo y entretenimiento</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('accesorios')">
+                    <div class="text-6xl mb-4">🎧</div>
+                    <h3 class="text-xl font-semibold mb-2">Accesorios</h3>
+                    <p class="text-gray-600">Complementos para tus dispositivos</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart-section" class="section hidden">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Carrito de Compras</h2>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div id="cart-items">
+                    <p class="text-gray-500 text-center py-8">Tu carrito está vacío</p>
+                </div>
+                <div id="cart-summary" class="hidden border-t pt-4 mt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span>IVA (19%):</span>
+                        <span id="tax">$0</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xl font-bold mb-4">
+                        <span>Total:</span>
+                        <span id="total">$0</span>
+                    </div>
+                    <button onclick="checkout()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition">
+                        Proceder al Pago
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="login-section" class="section hidden">
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+                <h2 class="text-2xl font-bold text-center mb-6">Iniciar Sesión</h2>
+                <form id="login-form" onsubmit="login(event)">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                        <input type="email" id="login-email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Contraseña:</label>
+                        <input type="password" id="login-password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition">
+                        Iniciar Sesión
+                    </button>
+                </form>
+                <div class="text-center mt-4">
+                    <a href="#" onclick="showSection('forgot-password')" class="text-blue-600 hover:underline">¿Olvidaste tu contraseña?</a>
+                </div>
+                <div class="text-center mt-2">
+                    <span class="text-gray-600">¿No tienes cuenta? </span>
+                    <a href="#" onclick="showSection('register')" class="text-blue-600 hover:underline">Regístrate</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Register Section -->
+        <section id="register-section" class="section hidden">
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+                <h2 class="text-2xl font-bold text-center mb-6">Registrarse</h2>
+                <form id="register-form" onsubmit="register(event)">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
+                        <input type="text" id="register-name" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                        <input type="email" id="register-email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Contraseña:</label>
+                        <input type="password" id="register-password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Confirmar Contraseña:</label>
+                        <input type="password" id="register-confirm-password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="flex items-center">
+                            <input type="radio" name="user-type" value="user" checked class="mr-2">
+                            <span class="text-sm">Usuario</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="user-type" value="admin" class="mr-2">
+                            <span class="text-sm">Administrador</span>
+                        </label>
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold transition">
+                        Registrarse
+                    </button>
+                </form>
+                <div class="text-center mt-4">
+                    <span class="text-gray-600">¿Ya tienes cuenta? </span>
+                    <a href="#" onclick="showSection('login')" class="text-blue-600 hover:underline">Inicia sesión</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Forgot Password Section -->
+        <section id="forgot-password-section" class="section hidden">
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+                <h2 class="text-2xl font-bold text-center mb-6">Recuperar Contraseña</h2>
+                <form id="forgot-password-form" onsubmit="forgotPassword(event)">
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                        <input type="email" id="forgot-email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition">
+                        Enviar Enlace de Recuperación
+                    </button>
+                </form>
+                <div class="text-center mt-4">
+                    <a href="#" onclick="showSection('login')" class="text-blue-600 hover:underline">Volver al inicio de sesión</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Checkout Section -->
+        <section id="checkout-section" class="section hidden">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Finalizar Compra</h2>
+            
+            <!-- Order Summary -->
+            <div class="grid lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-4">Resumen del Pedido</h3>
+                    <div id="checkout-items" class="space-y-4 mb-6">
+                        <!-- Items will be loaded here -->
+                    </div>
+                    <div class="border-t pt-4">
+                        <div class="flex justify-between mb-2">
+                            <span>Subtotal:</span>
+                            <span id="checkout-subtotal">$0</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span>IVA (19%):</span>
+                            <span id="checkout-tax">$0</span>
+                        </div>
+                        <div class="flex justify-between text-xl font-bold">
+                            <span>Total:</span>
+                            <span id="checkout-total">$0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-6">Métodos de Pago</h3>
+                    
+                    <!-- Wompi -->
+                    <div class="payment-method mb-4 p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 transition cursor-pointer" onclick="selectPaymentMethod('wompi')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-2xl">💳</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-purple-700">Wompi</h4>
+                                    <p class="text-sm text-gray-600">Pago seguro con Wompi</p>
+                                </div>
+                            </div>
+                            <input type="radio" name="payment-method" value="wompi" class="w-4 h-4 text-purple-600">
+                        </div>
+                    </div>
+
+                    <!-- Credit/Debit Cards -->
+                    <div class="payment-method mb-4 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-300 transition cursor-pointer" onclick="selectPaymentMethod('card')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-2xl">💳</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-blue-700">Tarjeta de Crédito/Débito</h4>
+                                    <p class="text-sm text-gray-600">Visa, Mastercard, American Express</p>
+                                </div>
+                            </div>
+                            <input type="radio" name="payment-method" value="card" class="w-4 h-4 text-blue-600">
+                        </div>
+                    </div>
+
+                    <!-- PayPal -->
+                    <div class="payment-method mb-4 p-4 border-2 border-gray-200 rounded-lg hover:border-yellow-300 transition cursor-pointer" onclick="selectPaymentMethod('paypal')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-2xl">🅿️</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-yellow-700">PayPal</h4>
+                                    <p class="text-sm text-gray-600">Paga con tu cuenta PayPal</p>
+                                </div>
+                            </div>
+                            <input type="radio" name="payment-method" value="paypal" class="w-4 h-4 text-yellow-600">
+                        </div>
+                    </div>
+
+                    <!-- Bank Transfer -->
+                    <div class="payment-method mb-6 p-4 border-2 border-gray-200 rounded-lg hover:border-green-300 transition cursor-pointer" onclick="selectPaymentMethod('transfer')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-2xl">🏦</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-green-700">Transferencia Bancaria</h4>
+                                    <p class="text-sm text-gray-600">PSE - Débito desde tu cuenta</p>
+                                </div>
+                            </div>
+                            <input type="radio" name="payment-method" value="transfer" class="w-4 h-4 text-green-600">
+                        </div>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <div id="payment-form" class="hidden">
+                        <!-- Wompi Form -->
+                        <div id="wompi-form" class="payment-form-content hidden">
+                            <div class="bg-purple-50 p-4 rounded-lg mb-4">
+                                <p class="text-sm text-purple-700">
+                                    <strong>Demo:</strong> Serás redirigido a Wompi para completar el pago de forma segura.
+                                </p>
+                            </div>
+                            <button onclick="processPayment('Wompi')" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition">
+                                Pagar con Wompi
+                            </button>
+                        </div>
+
+                        <!-- Card Form -->
+                        <div id="card-form" class="payment-form-content hidden">
+                            <div class="bg-yellow-50 p-4 rounded-lg mb-4">
+                                <p class="text-sm text-yellow-700">
+                                    <strong>Demo:</strong> Esta es una simulación. No ingreses datos reales.
+                                </p>
+                            </div>
+                            <div class="space-y-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Número de Tarjeta</label>
+                                    <input type="text" placeholder="1234 5678 9012 3456" class="w-full px-3 py-2 border rounded-lg" maxlength="19">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Fecha de Vencimiento</label>
+                                        <input type="text" placeholder="MM/AA" class="w-full px-3 py-2 border rounded-lg" maxlength="5">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">CVV</label>
+                                        <input type="text" placeholder="123" class="w-full px-3 py-2 border rounded-lg" maxlength="4">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Nombre del Titular</label>
+                                    <input type="text" placeholder="Juan Pérez" class="w-full px-3 py-2 border rounded-lg">
+                                </div>
+                            </div>
+                            <button onclick="processPayment('Tarjeta de Crédito')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition">
+                                Pagar con Tarjeta
+                            </button>
+                        </div>
+
+                        <!-- PayPal Form -->
+                        <div id="paypal-form" class="payment-form-content hidden">
+                            <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                                <p class="text-sm text-blue-700">
+                                    <strong>Demo:</strong> Serás redirigido a PayPal para completar el pago.
+                                </p>
+                            </div>
+                            <button onclick="processPayment('PayPal')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-lg font-semibold transition">
+                                Pagar con PayPal
+                            </button>
+                        </div>
+
+                        <!-- Transfer Form -->
+                        <div id="transfer-form" class="payment-form-content hidden">
+                            <div class="bg-green-50 p-4 rounded-lg mb-4">
+                                <p class="text-sm text-green-700">
+                                    <strong>Demo:</strong> Serás redirigido a tu banco para autorizar la transferencia PSE.
+                                </p>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-1">Selecciona tu Banco</label>
+                                <select class="w-full px-3 py-2 border rounded-lg">
+                                    <option>Bancolombia</option>
+                                    <option>Banco de Bogotá</option>
+                                    <option>Davivienda</option>
+                                    <option>BBVA Colombia</option>
+                                    <option>Banco Popular</option>
+                                    <option>Banco de Occidente</option>
+                                </select>
+                            </div>
+                            <button onclick="processPayment('Transferencia Bancaria PSE')" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition">
+                                Pagar con PSE
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t">
+                        <button onclick="showSection('cart')" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg font-semibold transition">
+                            Volver al Carrito
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Order Success Section -->
+        <section id="order-success-section" class="section hidden">
+            <div class="max-w-2xl mx-auto text-center">
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-4xl">✅</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-green-600 mb-4">¡Compra Exitosa!</h2>
+                    <p class="text-gray-600 mb-6">Tu pedido ha sido procesado correctamente</p>
+                    
+                    <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                            <div>
+                                <p class="text-sm text-gray-500">Número de Orden</p>
+                                <p class="font-bold text-lg" id="order-number">#TS123456</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Total Pagado</p>
+                                <p class="font-bold text-lg text-green-600" id="order-total">$0</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Método de Pago</p>
+                                <p class="font-bold text-lg" id="payment-method-used">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                        <p class="text-sm text-blue-700">
+                            📧 Hemos enviado la confirmación de tu pedido a tu email.<br>
+                            📦 Recibirás tu pedido en 2-3 días hábiles.
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <button onclick="showSection('home')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition">
+                            Continuar Comprando
+                        </button>
+                        <p class="text-sm text-gray-500">Serás redirigido automáticamente en 10 segundos</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Panel (only visible to admins) -->
+        <section id="admin-section" class="section hidden">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Panel de Administración</h2>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4">Agregar Producto</h3>
+                <form id="add-product-form" onsubmit="addProduct(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
+                        <input type="text" id="product-name" required class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Precio:</label>
+                        <input type="number" id="product-price" required class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Categoría:</label>
+                        <select id="product-category" required class="w-full px-3 py-2 border rounded-lg">
+                            <option value="smartphones">Smartphones</option>
+                            <option value="laptops">Laptops</option>
+                            <option value="tablets">Tablets</option>
+                            <option value="accesorios">Accesorios</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Emoji:</label>
+                        <input type="text" id="product-emoji" required class="w-full px-3 py-2 border rounded-lg" placeholder="📱">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Descripción:</label>
+                        <textarea id="product-description" required class="w-full px-3 py-2 border rounded-lg" rows="3"></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="product-featured" class="mr-2">
+                            <span class="text-sm">Producto destacado</span>
+                        </label>
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+                            Agregar Producto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">🛒 TechStore</h3>
+                    <p class="text-gray-300 mb-4">Conectando el futuro contigo desde 2010</p>
+                    <div class="flex space-x-4">
+                        <span class="text-2xl cursor-pointer hover:text-blue-400">📘</span>
+                        <span class="text-2xl cursor-pointer hover:text-blue-400">📷</span>
+                        <span class="text-2xl cursor-pointer hover:text-blue-400">🐦</span>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Empresa</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" onclick="showSection('about')" class="hover:text-white">Sobre Nosotros</a></li>
+                        <li><a href="#" class="hover:text-white">Carreras</a></li>
+                        <li><a href="#" class="hover:text-white">Prensa</a></li>
+                        <li><a href="#" class="hover:text-white">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Soporte</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Centro de Ayuda</a></li>
+                        <li><a href="#" class="hover:text-white">Contacto</a></li>
+                        <li><a href="#" class="hover:text-white">Garantías</a></li>
+                        <li><a href="#" class="hover:text-white">Devoluciones</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Términos de Uso</a></li>
+                        <li><a href="#" class="hover:text-white">Privacidad</a></li>
+                        <li><a href="#" class="hover:text-white">Cookies</a></li>
+                        <li><a href="#" class="hover:text-white">Licencias</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2023 TechStore. Todos los derechos reservados. | Innovación desde 2010</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let cart = [];
+        let products = [
+            {
+                id: 1,
+                name: "iPhone 15 Pro",
+                price: 4500000,
+                category: "smartphones",
+                emoji: "📱",
+                description: "El último iPhone con chip A17 Pro y cámara de 48MP",
+                featured: true
+            },
+            {
+                id: 2,
+                name: "MacBook Pro M3",
+                price: 8500000,
+                category: "laptops",
+                emoji: "💻",
+                description: "Laptop profesional con chip M3 y pantalla Retina",
+                featured: true
+            },
+            {
+                id: 3,
+                name: "iPad Air",
+                price: 2800000,
+                category: "tablets",
+                emoji: "📱",
+                description: "Tablet versátil para trabajo y entretenimiento",
+                featured: false
+            },
+            {
+                id: 4,
+                name: "AirPods Pro",
+                price: 950000,
+                category: "accesorios",
+                emoji: "🎧",
+                description: "Auriculares inalámbricos con cancelación de ruido",
+                featured: true
+            },
+            {
+                id: 5,
+                name: "Samsung Galaxy S24",
+                price: 4200000,
+                category: "smartphones",
+                emoji: "📱",
+                description: "Smartphone Android con IA integrada",
+                featured: false
+            },
+            {
+                id: 6,
+                name: "Dell XPS 13",
+                price: 6800000,
+                category: "laptops",
+                emoji: "💻",
+                description: "Ultrabook compacta y potente",
+                featured: true
+            }
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserFromStorage();
+            loadCartFromStorage();
+            loadProducts();
+            startCarousel();
+            updateCartDisplay();
+            updateUserInterface();
+        });
+
+        // User management
+        function loadUserFromStorage() {
+            const userData = localStorage.getItem('techstore_user');
+            if (userData) {
+                currentUser = JSON.parse(userData);
+            }
+        }
+
+        function saveUserToStorage() {
+            if (currentUser) {
+                localStorage.setItem('techstore_user', JSON.stringify(currentUser));
+            }
+        }
+
+        function register(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const userType = document.querySelector('input[name="user-type"]:checked').value;
+
+            if (password !== confirmPassword) {
+                showNotification('Las contraseñas no coinciden', 'error');
+                return;
+            }
+
+            // Check if user already exists
+            const existingUsers = JSON.parse(localStorage.getItem('techstore_users') || '[]');
+            if (existingUsers.find(user => user.email === email)) {
+                showNotification('El email ya está registrado', 'error');
+                return;
+            }
+
+            // Create new user
+            const newUser = {
+                id: Date.now(),
+                name,
+                email,
+                password, // In a real app, this would be hashed
+                type: userType,
+                createdAt: new Date().toISOString()
+            };
+
+            existingUsers.push(newUser);
+            localStorage.setItem('techstore_users', JSON.stringify(existingUsers));
+
+            showNotification('Registro exitoso. Ahora puedes iniciar sesión', 'success');
+            showSection('login');
+            document.getElementById('register-form').reset();
+        }
+
+        function login(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const users = JSON.parse(localStorage.getItem('techstore_users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                saveUserToStorage();
+                updateUserInterface();
+                showNotification(`¡Bienvenido, ${user.name}!`, 'success');
+                showSection('home');
+                document.getElementById('login-form').reset();
+            } else {
+                showNotification('Email o contraseña incorrectos', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('techstore_user');
+            updateUserInterface();
+            showNotification('Sesión cerrada exitosamente', 'success');
+            showSection('home');
+        }
+
+        function forgotPassword(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('forgot-email').value;
+            const users = JSON.parse(localStorage.getItem('techstore_users') || '[]');
+            const user = users.find(u => u.email === email);
+
+            if (user) {
+                showNotification('Se ha enviado un enlace de recuperación a tu email', 'success');
+            } else {
+                showNotification('Email no encontrado', 'error');
+            }
+            
+            document.getElementById('forgot-password-form').reset();
+        }
+
+        function updateUserInterface() {
+            const userMenu = document.getElementById('user-menu');
+            const authButtons = document.getElementById('auth-buttons');
+
+            if (currentUser) {
+                userMenu.classList.remove('hidden');
+                authButtons.classList.add('hidden');
+                document.getElementById('user-name').textContent = currentUser.name;
+                
+                // Show admin panel if user is admin
+                if (currentUser.type === 'admin') {
+                    // Add admin link to navigation
+                    const nav = document.querySelector('nav');
+                    if (!document.getElementById('admin-link')) {
+                        const adminLink = document.createElement('a');
+                        adminLink.id = 'admin-link';
+                        adminLink.href = '#';
+                        adminLink.onclick = () => showSection('admin');
+                        adminLink.className = 'hover:text-blue-300 transition';
+                        adminLink.textContent = 'Admin';
+                        nav.appendChild(adminLink);
+                    }
+                }
+            } else {
+                userMenu.classList.add('hidden');
+                authButtons.classList.remove('hidden');
+                
+                // Remove admin link
+                const adminLink = document.getElementById('admin-link');
+                if (adminLink) {
+                    adminLink.remove();
+                }
+            }
+        }
+
+        // Cart management
+        function loadCartFromStorage() {
+            const cartData = localStorage.getItem('techstore_cart');
+            if (cartData) {
+                cart = JSON.parse(cartData);
+            }
+        }
+
+        function saveCartToStorage() {
+            localStorage.setItem('techstore_cart', JSON.stringify(cart));
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    ...product,
+                    quantity: 1
+                });
+            }
+
+            saveCartToStorage();
+            updateCartDisplay();
+            showNotification(`${product.name} agregado al carrito`, 'success');
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCartToStorage();
+            updateCartDisplay();
+            showNotification('Producto eliminado del carrito', 'success');
+        }
+
+        function updateQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    saveCartToStorage();
+                    updateCartDisplay();
+                }
+            }
+        }
+
+        function updateCartDisplay() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItems = document.getElementById('cart-items');
+            const cartSummary = document.getElementById('cart-summary');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="text-gray-500 text-center py-8">Tu carrito está vacío</p>';
+                cartSummary.classList.add('hidden');
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-2xl">${item.emoji}</span>
+                            <div>
+                                <h4 class="font-semibold">${item.name}</h4>
+                                <p class="text-gray-600">$${item.price.toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQuantity(${item.id}, -1)" class="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center">-</button>
+                            <span class="w-8 text-center">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)" class="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center">+</button>
+                            <button onclick="removeFromCart(${item.id})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-4">Eliminar</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const tax = subtotal * 0.19;
+                const total = subtotal + tax;
+
+                document.getElementById('subtotal').textContent = `$${subtotal.toLocaleString()}`;
+                document.getElementById('tax').textContent = `$${tax.toLocaleString()}`;
+                document.getElementById('total').textContent = `$${total.toLocaleString()}`;
+
+                cartSummary.classList.remove('hidden');
+            }
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                showNotification('Tu carrito está vacío', 'error');
+                return;
+            }
+
+            if (!currentUser) {
+                showNotification('Para finalizar la compra, inicia sesión o regístrate', 'error');
+                showSection('login');
+                return;
+            }
+
+            showSection('checkout');
+        }
+
+        function processPayment(paymentMethod) {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 1.19;
+            
+            // Show processing animation
+            const button = event.target;
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Procesando...';
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                // Simulate success/failure (90% success rate)
+                const success = Math.random() > 0.1;
+                
+                if (success) {
+                    showNotification(`¡Pago exitoso con ${paymentMethod}! Total: $${total.toLocaleString()}`, 'success');
+                    
+                    // Clear cart
+                    cart = [];
+                    saveCartToStorage();
+                    updateCartDisplay();
+                    
+                    // Show success page
+                    showOrderSuccess(total, paymentMethod);
+                } else {
+                    showNotification(`Error en el pago con ${paymentMethod}. Intenta nuevamente.`, 'error');
+                    button.disabled = false;
+                    button.textContent = originalText;
+                }
+            }, 2000);
+        }
+
+        function showOrderSuccess(total, paymentMethod) {
+            const orderNumber = 'TS' + Date.now().toString().slice(-6);
+            const successSection = document.getElementById('order-success-section');
+            
+            document.getElementById('order-number').textContent = orderNumber;
+            document.getElementById('order-total').textContent = `$${total.toLocaleString()}`;
+            document.getElementById('payment-method-used').textContent = paymentMethod;
+            
+            showSection('order-success');
+            
+            // Auto redirect to home after 10 seconds
+            setTimeout(() => {
+                showSection('home');
+            }, 10000);
+        }
+
+        // Product management
+        function loadProducts() {
+            displayProducts(products);
+            displayFeaturedProducts();
+        }
+
+        function displayProducts(productsToShow) {
+            const productsGrid = document.getElementById('products-grid');
+            productsGrid.innerHTML = productsToShow.map(product => createProductCard(product)).join('');
+        }
+
+        function displayFeaturedProducts() {
+            const featuredProducts = products.filter(p => p.featured);
+            const featuredGrid = document.getElementById('featured-products');
+            featuredGrid.innerHTML = featuredProducts.map(product => createProductCard(product)).join('');
+        }
+
+        function createProductCard(product) {
+            return `
+                <div class="bg-white rounded-lg shadow-md p-6 product-card">
+                    <div class="text-center mb-4">
+                        <div class="text-6xl mb-2">${product.emoji}</div>
+                        <h3 class="text-lg font-semibold mb-2">${product.name}</h3>
+                        <p class="text-gray-600 text-sm mb-3">${product.description}</p>
+                        <p class="text-2xl font-bold text-blue-600">$${product.price.toLocaleString()}</p>
+                    </div>
+                    <button onclick="addToCart(${product.id})" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition">
+                        Agregar al Carrito
+                    </button>
+                </div>
+            `;
+        }
+
+        function filterProducts() {
+            const category = document.getElementById('category-filter').value;
+            const filteredProducts = category ? products.filter(p => p.category === category) : products;
+            displayProducts(filteredProducts);
+        }
+
+        function filterByCategory(category) {
+            showSection('products');
+            document.getElementById('category-filter').value = category;
+            filterProducts();
+        }
+
+        function addProduct(event) {
+            event.preventDefault();
+            
+            if (!currentUser || currentUser.type !== 'admin') {
+                showNotification('Solo los administradores pueden agregar productos', 'error');
+                return;
+            }
+
+            const name = document.getElementById('product-name').value;
+            const price = parseInt(document.getElementById('product-price').value);
+            const category = document.getElementById('product-category').value;
+            const emoji = document.getElementById('product-emoji').value;
+            const description = document.getElementById('product-description').value;
+            const featured = document.getElementById('product-featured').checked;
+
+            const newProduct = {
+                id: Date.now(),
+                name,
+                price,
+                category,
+                emoji,
+                description,
+                featured
+            };
+
+            products.push(newProduct);
+            loadProducts();
+            
+            showNotification('Producto agregado exitosamente', 'success');
+            document.getElementById('add-product-form').reset();
+        }
+
+        // Payment methods
+        function selectPaymentMethod(method) {
+            // Update radio button
+            document.querySelector(`input[value="${method}"]`).checked = true;
+            
+            // Update visual selection
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('border-blue-500', 'border-purple-500', 'border-yellow-500', 'border-green-500');
+                el.classList.add('border-gray-200');
+            });
+            
+            const selectedMethod = document.querySelector(`input[value="${method}"]`).closest('.payment-method');
+            switch(method) {
+                case 'wompi':
+                    selectedMethod.classList.add('border-purple-500');
+                    break;
+                case 'card':
+                    selectedMethod.classList.add('border-blue-500');
+                    break;
+                case 'paypal':
+                    selectedMethod.classList.add('border-yellow-500');
+                    break;
+                case 'transfer':
+                    selectedMethod.classList.add('border-green-500');
+                    break;
+            }
+            
+            // Show payment form
+            document.getElementById('payment-form').classList.remove('hidden');
+            
+            // Hide all forms first
+            document.querySelectorAll('.payment-form-content').forEach(form => {
+                form.classList.add('hidden');
+            });
+            
+            // Show selected form
+            document.getElementById(method + '-form').classList.remove('hidden');
+            
+            // Update checkout summary
+            updateCheckoutSummary();
+        }
+
+        function updateCheckoutSummary() {
+            const checkoutItems = document.getElementById('checkout-items');
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.19;
+            const total = subtotal + tax;
+
+            checkoutItems.innerHTML = cart.map(item => `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xl">${item.emoji}</span>
+                        <div>
+                            <h4 class="font-medium">${item.name}</h4>
+                            <p class="text-sm text-gray-600">Cantidad: ${item.quantity}</p>
+                        </div>
+                    </div>
+                    <p class="font-semibold">$${(item.price * item.quantity).toLocaleString()}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('checkout-subtotal').textContent = `$${subtotal.toLocaleString()}`;
+            document.getElementById('checkout-tax').textContent = `$${tax.toLocaleString()}`;
+            document.getElementById('checkout-total').textContent = `$${total.toLocaleString()}`;
+        }
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+
+            // Special handling for checkout section
+            if (sectionName === 'checkout') {
+                updateCheckoutSummary();
+            }
+
+            // Special handling for admin section
+            if (sectionName === 'admin' && (!currentUser || currentUser.type !== 'admin')) {
+                showNotification('Acceso denegado. Solo administradores', 'error');
+                showSection('home');
+                return;
+            }
+        }
+
+        /* Mobile menu: toggle open/close, update icons and close on resize */
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-nav');
+            const btn = document.getElementById('mobile-menu-button');
+            const openIcon = document.getElementById('mobile-menu-open');
+            const closeIcon = document.getElementById('mobile-menu-close');
+
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                btn.setAttribute('aria-expanded', 'true');
+                openIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
+                btn.setAttribute('aria-expanded', 'false');
+                openIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            }
+        }
+
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobile-nav');
+            const btn = document.getElementById('mobile-menu-button');
+            const openIcon = document.getElementById('mobile-menu-open');
+            const closeIcon = document.getElementById('mobile-menu-close');
+            if (!menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+                btn.setAttribute('aria-expanded', 'false');
+                openIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            }
+        }
+
+        // wire up mobile menu button
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileBtn = document.getElementById('mobile-menu-button');
+            if (mobileBtn) {
+                mobileBtn.addEventListener('click', toggleMobileMenu);
+            }
+
+            // Close mobile menu on window resize if width >= 768px espa
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+
+        // Carrusel de productos destacados
+        function startCarousel() {
+            const slides = document.querySelectorAll('.carousel-slide');
+            let currentSlide = 0;
+
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 4000);
+        }
+
+        // Notificaciones
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98780b9836a00ce3',t:'MTc1OTI4MDY1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
