@@ -18,7 +18,7 @@
         <div class="container mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <h1 class="text-2xl font-bold">🛒 TechStore</h1>
+                    <h1 class="text-2xl font-bold">TECH STORE</h1>
                 </div>
                 
                 <nav class="hidden md:flex space-x-6">
@@ -57,7 +57,7 @@
             </div>
         </div>
     </header>
-    <!-- Mobile navigation (hidden by default) -->
+    <!-- Navegación móvil -->
     <nav id="mobile-nav" class="md:hidden hidden bg-blue-900 text-white">
         <div class="container mx-auto px-4 py-4">
             <ul class="space-y-3">
@@ -67,19 +67,20 @@
                 <li><a href="#" onclick="showSection('categories'); closeMobileMenu();" class="block hover:text-blue-300">Categorías</a></li>
                 <li><a href="#" onclick="showSection('cart'); closeMobileMenu();" class="block hover:text-blue-300">Carrito</a></li>
                 <li><a href="#" onclick="showSection('login'); closeMobileMenu();" class="block hover:text-blue-300">Iniciar Sesión</a></li>
+                <li><a href="#" onclick="showSection('register'); closeMobileMenu();" class="block hover:text-blue-300">Registrarse</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="container mx-auto px-4 py-8">
-        <!-- Home Section -->
+        <!-- SECCIÓN INICIAL -->
         <section id="home-section" class="section">
 
             <!--INCLUYE UN CARRUSELE CON 3 IMAGENES DE TAMANO COMPLETO IGUALES DESCARGA IMAGENES Y PONGASL EN LA CARPETA-->
             
 
-            <!-- Banner Carousel -->
+            <!-- Banner Carousel con 3 imagenes carousel1.jpg, carousel2.jpg, carousel3.jpg-->
             <div class="carousel-container bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg mb-8 h-64">
                 <div class="carousel-slide active flex items-center justify-center text-white text-center p-8">
                     <div>
@@ -104,7 +105,7 @@
                 </div>
             </div>
 
-            <!-- Company Stats -->
+            <!-- ESTADÍSTICAS DE LA EMPRESA -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
                 <div class="bg-white p-6 rounded-lg shadow-md text-center">
                     <div class="text-3xl font-bold text-blue-600 mb-2">13+</div>
@@ -124,34 +125,80 @@
                 </div>
             </div>
 
-            <!-- Featured Products -->
+            <!-- Productos Destacados -->
             <div class="mb-12">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Productos Destacados</h2>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Productos Destacados</h2>
                 <div id="featured-products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Products will be loaded here -->
                 </div>
             </div>
 
-            <!-- Categories Preview -->
+            <!-- Categorías Preview -->
             <div>
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Nuestras Categorías</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!--Nuestras categorías-->
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Explora Nuestras Categorías</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                     <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('smartphones')">
-                        <div class="text-4xl mb-2">💻</div>
-                        <h3 class="font-semibold">Técnología</h3>
+                        <div class="text-6xl mb-4">💻</div>
+                        <h3 class="text-xl font-semibold mb-2">Técnología</h3>
+                        <p class="text-gray-600">Lo ultimo en portátiles y pc de alta gama</p>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('laptops')">
-                        <div class="text-4xl mb-2">🎧</div>
-                        <h3 class="font-semibold">Accesorios</h3>
+                        <div class="text-6xl mb-4">🎧</div>
+                        <h3 class="text-xl font-semibold mb-2">Accesorios</h3>
+                        <p class="text-gray-600">Complementos para tus dispositivos</p>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('tablets')">
-                        <div class="text-4xl mb-2">📱</div>
-                        <h3 class="font-semibold">Hogar</h3>
+                        <div class="text-6xl mb-4">📺</div>
+                        <h3 class="text-xl font-semibold mb-2">Hogar</h3>
+                        <p class="text-gray-600">Todo para tu hogar inteligente</p>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('accesorios')">
-                        <div class="text-4xl mb-2">📱</div>
-                        <h3 class="font-semibold">Moda</h3>
+                        <div class="text-6xl mb-4">📱</div>
+                        <h3 class="text-xl font-semibold mb-2">Moda</h3>
+                        <p class="text-gray-600">Celulares de última generación</p>
                     </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('accesorios')">
+                        <div class="text-6xl mb-4">🦼</div>
+                        <h3 class="text-xl font-semibold mb-2">Salud</h3>
+                        <p class="text-gray-600">Dispositivos y accesorios para el cuidado personal</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="showSection('categories'); closeMobileMenu();">
+                        <div class="text-6xl mb-4">🛒</div>
+                        <h3 class="text-xl font-semibold mb-2">Ver Todos</h3>
+                        <p class="text-gray-600">Explora todos nuestros productos</p>
+            </div>
+        </section>
+
+        <!-- CONTACTO -->
+        <section id="contact-section" class="section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-8 max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Contáctanos</h2>
+                <form id="contact-form" class="space-y-4">
+                    <div>
+                        <label for="contact-name" class="block text-gray-700 mb-2">Nombre</label>
+                        <input type="text" id="contact-name" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300" required>
+                    </div>
+                    <div>
+                        <label for="contact-email" class="block text-gray-700 mb-2">Email</label>
+                        <input type="email" id="contact-email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300" required>
+                    </div>
+                    <div>
+                        <label for="contact-message" class="block text-gray-700 mb-2">Mensaje</label>
+                        <textarea id="contact-message" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300" required></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Enviar</button>
+                </form>
+                <!--mensaje de envio correcto del mensaje-->
+                <div id="success-message" class="hidden mt-4 p-4 bg-green-100 text-green-800 rounded-lg">
+                    ¡Mensaje enviado correctamente!
+                </div>
+            </div>
+            <!--Mapa-->
+            <div class="mt-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Nuestra Ubicación</h2>
+                <div class="w-full h-64 md:h-96 rounded-lg overflow-hidden shadow-lg">
+                    <iframe class="w-full h-full" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.827648888634!2d-74.08174968523092!3d4.609710643960634!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f99c6f5b5b5b5%3A0x4a4a4a4a4a4a4a4a!2sTechStore%20Sede%20Principal!5e0!3m2!1ses!2sco!4v1600000000000!5m2!1ses!2sco" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
                 </div>
             </div>
         </section>
@@ -372,26 +419,31 @@
         <section id="categories-section" class="section hidden">
             <h2 class="text-3xl font-bold text-gray-800 mb-6">Categorías</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white p-8 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('smartphones')">
-                    <div class="text-6xl mb-4">📱</div>
-                    <h3 class="text-xl font-semibold mb-2">Smartphones</h3>
-                    <p class="text-gray-600">Los últimos modelos de smartphones</p>
-                </div>
-                <div class="bg-white p-8 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('laptops')">
-                    <div class="text-6xl mb-4">💻</div>
-                    <h3 class="text-xl font-semibold mb-2">Laptops</h3>
-                    <p class="text-gray-600">Computadoras portátiles de alta gama</p>
-                </div>
-                <div class="bg-white p-8 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('tablets')">
-                    <div class="text-6xl mb-4">📱</div>
-                    <h3 class="text-xl font-semibold mb-2">Tablets</h3>
-                    <p class="text-gray-600">Tablets para trabajo y entretenimiento</p>
-                </div>
-                <div class="bg-white p-8 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('accesorios')">
-                    <div class="text-6xl mb-4">🎧</div>
-                    <h3 class="text-xl font-semibold mb-2">Accesorios</h3>
-                    <p class="text-gray-600">Complementos para tus dispositivos</p>
-                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('smartphones')">
+                        <div class="text-6xl mb-4">💻</div>
+                        <h3 class="text-xl font-semibold mb-2">Técnología</h3>
+                        <p class="text-gray-600">Lo ultimo en portátiles y pc de alta gama</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('laptops')">
+                        <div class="text-6xl mb-4">🎧</div>
+                        <h3 class="text-xl font-semibold mb-2">Accesorios</h3>
+                        <p class="text-gray-600">Complementos para tus dispositivos</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('tablets')">
+                        <div class="text-6xl mb-4">📺</div>
+                        <h3 class="text-xl font-semibold mb-2">Hogar</h3>
+                        <p class="text-gray-600">Todo para tu hogar inteligente</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('accesorios')">
+                        <div class="text-6xl mb-4">📱</div>
+                        <h3 class="text-xl font-semibold mb-2">Moda</h3>
+                        <p class="text-gray-600">Celulares de última generación</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition cursor-pointer" onclick="filterByCategory('accesorios')">
+                        <div class="text-6xl mb-4">🦼</div>
+                        <h3 class="text-xl font-semibold mb-2">Salud</h3>
+                        <p class="text-gray-600">Dispositivos y accesorios para el cuidado personal</p>
+                    </div>
             </div>
         </section>
 
@@ -527,7 +579,7 @@
                     </div>
                 </div>
 
-                <!-- Payment Methods -->
+                <!-- Metodos de pagos -->
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h3 class="text-xl font-semibold mb-6">Métodos de Pago</h3>
                     
@@ -547,7 +599,7 @@
                         </div>
                     </div>
 
-                    <!-- Credit/Debit Cards -->
+                    <!-- Tarjeta de Crédito/Débito -->
                     <div class="payment-method mb-4 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-300 transition cursor-pointer" onclick="selectPaymentMethod('card')">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
@@ -597,7 +649,7 @@
 
                     <!-- Payment Form -->
                     <div id="payment-form" class="hidden">
-                        <!-- Wompi Form -->
+                        <!-- formulario de pago wompi-->
                         <div id="wompi-form" class="payment-form-content hidden">
                             <div class="bg-purple-50 p-4 rounded-lg mb-4">
                                 <p class="text-sm text-purple-700">
@@ -609,7 +661,7 @@
                             </button>
                         </div>
 
-                        <!-- Card Form -->
+                        <!-- Formulario de Tarjeta -->
                         <div id="card-form" class="payment-form-content hidden">
                             <div class="bg-yellow-50 p-4 rounded-lg mb-4">
                                 <p class="text-sm text-yellow-700">
@@ -641,7 +693,7 @@
                             </button>
                         </div>
 
-                        <!-- PayPal Form -->
+                        <!-- Formulario de PayPal -->
                         <div id="paypal-form" class="payment-form-content hidden">
                             <div class="bg-blue-50 p-4 rounded-lg mb-4">
                                 <p class="text-sm text-blue-700">
@@ -653,7 +705,7 @@
                             </button>
                         </div>
 
-                        <!-- Transfer Form -->
+                        <!-- Formulario de Transferencia -->
                         <div id="transfer-form" class="payment-form-content hidden">
                             <div class="bg-green-50 p-4 rounded-lg mb-4">
                                 <p class="text-sm text-green-700">
@@ -686,7 +738,7 @@
             </div>
         </section>
 
-        <!-- Order Success Section -->
+        <!-- sección de éxito del pedido -->
         <section id="order-success-section" class="section hidden">
             <div class="max-w-2xl mx-auto text-center">
                 <div class="bg-white rounded-lg shadow-lg p-8">
@@ -830,6 +882,7 @@
                 id: 1,
                 name: "iPhone 15 Pro",
                 price: 4500000,
+                stock: 10,
                 category: "smartphones",
                 emoji: "📱",
                 description: "El último iPhone con chip A17 Pro y cámara de 48MP",
@@ -839,6 +892,7 @@
                 id: 2,
                 name: "MacBook Pro M3",
                 price: 8500000,
+                stock: 5,
                 category: "laptops",
                 emoji: "💻",
                 description: "Laptop profesional con chip M3 y pantalla Retina",
@@ -848,15 +902,18 @@
                 id: 3,
                 name: "iPad Air",
                 price: 2800000,
+                stock: 8,
                 category: "tablets",
                 emoji: "📱",
                 description: "Tablet versátil para trabajo y entretenimiento",
                 featured: false
+            
             },
             {
                 id: 4,
                 name: "AirPods Pro",
                 price: 950000,
+                stock: 15,
                 category: "accesorios",
                 emoji: "🎧",
                 description: "Auriculares inalámbricos con cancelación de ruido",
@@ -866,6 +923,7 @@
                 id: 5,
                 name: "Samsung Galaxy S24",
                 price: 4200000,
+                stock: 10,
                 category: "smartphones",
                 emoji: "📱",
                 description: "Smartphone Android con IA integrada",
@@ -875,14 +933,16 @@
                 id: 6,
                 name: "Dell XPS 13",
                 price: 6800000,
+                stock: 5,
                 category: "laptops",
                 emoji: "💻",
                 description: "Ultrabook compacta y potente",
                 featured: true
             }
+            
         ];
 
-        // Initialize app
+        // Inicialización de la aplicación
         document.addEventListener('DOMContentLoaded', function() {
             loadUserFromStorage();
             loadCartFromStorage();
@@ -892,7 +952,7 @@
             updateUserInterface();
         });
 
-        // User management
+        // Gestión de usuarios (Registro, Login, Logout, Recuperación de Contraseña)
         function loadUserFromStorage() {
             const userData = localStorage.getItem('techstore_user');
             if (userData) {
@@ -920,19 +980,19 @@
                 return;
             }
 
-            // Check if user already exists
+            // Salir si el email ya está registrado
             const existingUsers = JSON.parse(localStorage.getItem('techstore_users') || '[]');
             if (existingUsers.find(user => user.email === email)) {
                 showNotification('El email ya está registrado', 'error');
                 return;
             }
 
-            // Create new user
+            // Crear nuevo usuario
             const newUser = {
                 id: Date.now(),
                 name,
                 email,
-                password, // In a real app, this would be hashed
+                password, // En una aplicación real, esto estaría encriptado
                 type: userType,
                 createdAt: new Date().toISOString()
             };
@@ -999,9 +1059,9 @@
                 authButtons.classList.add('hidden');
                 document.getElementById('user-name').textContent = currentUser.name;
                 
-                // Show admin panel if user is admin
+                // mostrar enlace de admin si el usuario es admin
                 if (currentUser.type === 'admin') {
-                    // Add admin link to navigation
+                    // Agregar enlace de admin a la navegación
                     const nav = document.querySelector('nav');
                     if (!document.getElementById('admin-link')) {
                         const adminLink = document.createElement('a');
@@ -1017,7 +1077,7 @@
                 userMenu.classList.add('hidden');
                 authButtons.classList.remove('hidden');
                 
-                // Remove admin link
+                // remover enlace de admin si no hay usuario o no es admin
                 const adminLink = document.getElementById('admin-link');
                 if (adminLink) {
                     adminLink.remove();
@@ -1025,7 +1085,7 @@
             }
         }
 
-        // Cart management
+        // administración de productos
         function loadCartFromStorage() {
             const cartData = localStorage.getItem('techstore_cart');
             if (cartData) {
