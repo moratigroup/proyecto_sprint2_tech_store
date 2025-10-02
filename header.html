@@ -1,0 +1,44 @@
+    <!-- El Header que comprende la navegación principal -->
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold">🛒 TechStore</h1>
+                </div>
+                
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" onclick="showSection('home')" class="hover:text-blue-300 transition">Inicio</a>
+                    <a href="#" onclick="showSection('about')" class="hover:text-blue-300 transition">Nosotros</a>
+                    <a href="#" onclick="showSection('products')" class="hover:text-blue-300 transition">Productos</a>
+                    <a href="#" onclick="showSection('categories')" class="hover:text-blue-300 transition">Categorías</a>
+                    <a href="#" onclick="showSection('contact')" class="hover:text-blue-300 transition">Contacto</a>
+                    
+                </nav>
+
+                <!-- Menu móvil -->
+                <button id="mobile-menu-button" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300" aria-controls="mobile-nav" aria-expanded="false" aria-label="Abrir menú">
+                    <!-- hamburger icon -->
+                    <svg id="mobile-menu-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <!-- close icon (hidden by default) -->
+                    <svg id="mobile-menu-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="showSection('cart')" class="relative hover:text-blue-300 transition">
+                        🛒 Carrito
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
+                    </button>
+                    
+                    <div id="user-menu" class="hidden">
+                        <span id="user-name" class="mr-2"></span>
+                        <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm transition">Salir</button>
+                    </div>
+                    
+                    <div id="auth-buttons">
+                        <button onclick="showSection('login')" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition">Iniciar Sesión</button>
+                        <button onclick="showSection('register')" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded ml-2 transition">Registrarse</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
